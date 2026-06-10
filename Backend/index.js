@@ -42,6 +42,10 @@ async function connectToMongo() {
     return;
   }
 
+app.get("/", (req, res) => {
+  res.send("Zerodha Backend is running successfully!");
+});
+
   try {
     await mongoose.connect(uri);
     console.log("✅ Connected to MongoDB");
@@ -197,8 +201,6 @@ app.get("/auth/me", authRequired, async (req, res) => {
   return res.json({ user: req.user });
 });
 
-
-// app.get("/addholding", async(req, res)=>{
 //   let tempholding=[
 //   {
 //     name: "BHARTIARTL",
