@@ -17,15 +17,16 @@ const Menu = () => {
     setIsProfileDropdownOpen(!isProfileDropdownOpen);
   };
 
-  const frontendUrl = process.env.REACT_APP_FRONTEND_URL;
+  const frontendUrl = process.env.REACT_APP_FRONTEND_URL || (process.env.NODE_ENV !== 'production' ? 'http://localhost:3001' : undefined);
 
   const redirectToFrontendHome = () => {
-    const target = frontendUrl ? `${frontendUrl.replace(/\/+$/, "")}/` : "/";
+    const target = frontendUrl ? `${frontendUrl.replace(/\/+$/, "")}/login` : "/";
     window.location.href = target;
   };
 
   const handleHome = () => {
-    redirectToFrontendHome();
+    const homeUrl = frontendUrl ? `${frontendUrl.replace(/\/+$/, "")}/` : "/";
+    window.location.href = homeUrl;
   };
 
   const handleLogout = () => {

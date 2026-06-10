@@ -2,7 +2,9 @@ import React, { useState, useEffect } from "react";
 import api from "../api";
 import { VerticalGraph } from "./VerticalGraph";
 
-const apiBase = process.env.REACT_APP_API_URL || "";
+const apiBase =
+  process.env.REACT_APP_API_URL ||
+  (process.env.NODE_ENV !== "production" ? "http://localhost:3002" : "");
 
 const Holdings = () => {
   const [allHoldings, setAllHoldings] = useState([]);

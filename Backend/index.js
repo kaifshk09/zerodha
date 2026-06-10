@@ -38,7 +38,7 @@ function validateMongoUrl(url) {
 
 async function connectToMongo() {
   if (!validateMongoUrl(uri)) {
-    console.error("❌ MONGO_URL is missing or invalid. Set it in Backend/.env");
+    console.error("❌ MONGO_URL is missing or invalid. Set it in Backend/.env or configure it in your deployment environment.");
     return;
   }
 

@@ -8,7 +8,9 @@ import {
 import api from "../api";
 import { DoughnutChart } from "./DoughnoutChart";
 
-const apiBase = process.env.REACT_APP_API_URL || "";
+const apiBase =
+  process.env.REACT_APP_API_URL ||
+  (process.env.NODE_ENV !== "production" ? "http://localhost:3002" : "");
 
 const WatchList = () => {
   const [watchlist, setWatchlist] = useState([]);
