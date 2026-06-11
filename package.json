@@ -8,8 +8,7 @@
   "scripts": {
     "build": "cd frontent && npm run build",
     "start": "node Backend/index.js"
-  }
-,
+  },
   "license": "ISC",
   "type": "commonjs"
 }
