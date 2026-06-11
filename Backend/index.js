@@ -16,6 +16,7 @@ const { usermodel } = require("./models/usermodel");
 const { authRequired } = require("./middleware/auth");
 
 
+
 // Mitigate some local resolver issues (won't help auth problems)
 dns.setServers(["8.8.8.8", "8.8.4.4"]);
 
@@ -29,6 +30,9 @@ sseEmitter.setMaxListeners(50);
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+
+
+
 
 function validateMongoUrl(url) {
   if (!url || typeof url !== "string") return false;
@@ -59,6 +63,10 @@ async function connectToMongo() {
     }
   }
 }
+
+
+// (removed broken placeholder frontend static serving)
+
 
 function getUserId(req) {
   return req.user?.sub;
@@ -112,93 +120,12 @@ app.get("/health", (req, res) => {
   res.json({ ok: true });
 });
 
-// -------------------- AUTH (JWT) --------------------
-app.post("/auth/signup", async (req, res) => {
-  try {
-    const { email, password } = req.body || {};
-    if (!email || !password) {
-      return res.status(400).json({ error: "email and password are required" });
-    }
-
-    if (!process.env.JWT_SECRET) {
-      return res
-        .status(500)
-        .json({ error: "JWT_SECRET missing on server (set Backend/.env)" });
-    }
-
-
-    const existing = await usermodel.findOne({
-      email: String(email).toLowerCase().trim(),
-    });
-
-    if (existing) {
-      return res.status(409).json({ error: "Email already in use" });
-    }
-
-    const passwordHash = await bcrypt.hash(String(password), 10);
-    const user = await usermodel.create({
-      email: String(email).toLowerCase().trim(),
-      passwordHash,
-    });
-
-    const token = jwt.sign(
-      { sub: user._id.toString(), email: user.email },
-      process.env.JWT_SECRET,
-      { expiresIn: "7d" },
-    );
-
-    return res.status(201).json({
-      token,
-      user: { id: user._id, email: user.email },
-    });
-  } catch (err) {
-    console.error("Signup failed:", err?.message || err);
-    return res.status(500).json({ error: "Signup failed" });
-  }
-});
-
-app.post("/auth/login", async (req, res) => {
-  try {
-    const { email, password } = req.body || {};
-    if (!email || !password) {
-      return res.status(400).json({ error: "email and password are required" });
-    }
-
-    if (!process.env.JWT_SECRET) {
-      return res.status(500).json({ error: "JWT_SECRET missing on server" });
-    }
-
-    const user = await usermodel.findOne({
-      email: String(email).toLowerCase().trim(),
-    });
-
-    if (!user) return res.status(401).json({ error: "Invalid credentials" });
-
-    const ok = await bcrypt.compare(String(password), user.passwordHash);
-    if (!ok) return res.status(401).json({ error: "Invalid credentials" });
-
-    const token = jwt.sign(
-      { sub: user._id.toString(), email: user.email },
-      process.env.JWT_SECRET,
-      { expiresIn: "7d" },
-    );
-
-    return res.json({
-      token,
-      user: { id: user._id, email: user.email },
-    });
-  } catch (err) {
-    console.error("Login failed:", err?.message || err);
-    return res.status(500).json({ error: "Login failed" });
-  }
-});
-
-app.get("/auth/me", authRequired, async (req, res) => {
-  return res.json({ user: req.user });
-});
-
+// -------------------- FRONTEND-ONLY MODE --------------------
+// This backend deployment is intended to serve React pages only.
+// All auth/API endpoints are disabled so Render can run without DB/JWT/API credentials.
 
 const { getGlobalQuote } = require("./services/alphaVantage");
+
 
 function isFiniteNumber(n) {
   return typeof n === "number" && Number.isFinite(n);
@@ -279,7 +206,8 @@ async function refreshMarketPricesForUser(userId) {
 }
 
 
-app.use("/api", authRequired);
+// Disabled API routes for frontend-only deployment.
+// app.use("/api", authRequired);
 
 app.get("/api/events", async (req, res) => {
   const userId = getUserId(req);
@@ -352,6 +280,33 @@ app.get("/api/funds", async (req, res) => {
     return res.status(500).json({ error: "Failed to load funds" });
   }
 });
+
+
+
+
+
+
+
+
+
+
+
+app.get("/home", (req, res) => {
+  res.sendFile(path.join(__dirname, "..\frontent\src\landing_page\home\Home.js"));
+});
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 app.post("/api/funds", async (req, res) => {
   try {
