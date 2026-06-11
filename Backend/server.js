@@ -1,5 +1,13 @@
 // Load environment variables first
-require('@dotenvx/dotenvx').config();
+try {
+  // Load local .env file. In production environments like Render, 
+  // variables are usually injected directly into the environment.
+  require('@dotenvx/dotenvx').config();
+} catch (error) {
+  if (process.env.NODE_ENV !== 'production') {
+    console.warn('⚠️ [Server] @dotenvx/dotenvx failed to load. Ensure it is installed for local development.');
+  }
+}
 
 const express = require('express');
 const path = require('path');
@@ -151,7 +159,7 @@ app.get("/api/quote/:symbol", authRequired, async (req, res, next) => {
 // 5. Static Assets (Production SPA Serving) - Robustly find and serve frontend build
 const buildDirCandidates = [
   path.join(__dirname, "..", "dashboard", "build"),
-  path.join(__dirname, "..", "frontent", "build"),
+  path.join(__dirname, "..", "frontend", "build"),
 ];
 
 let resolvedBuildDir = null;
