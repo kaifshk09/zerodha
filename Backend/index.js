@@ -605,10 +605,12 @@ if (resolvedBuildDir) {
   app.use(express.static(resolvedBuildDir));
 
   // SPA fallback: every non-API GET route returns index.html
-  app.get("*", (req, res) => {
+  // IMPORTANT: use a RegExp, not "*", to avoid path-to-regexp errors on newer Express versions.
+  app.get(/.*/, (req, res) => {
     if (req.path.startsWith("/api") || req.path.startsWith("/health")) return res.status(404).end();
     res.sendFile(path.join(resolvedBuildDir, "index.html"));
   });
+
 } else {
   console.warn("⚠️ React build not found. Tried:", buildDirCandidates);
 }
