@@ -1,5 +1,7 @@
 require("dotenv").config();
 const express = require("express");
+const path = require("path");
+const fs = require("fs");
 const { EventEmitter } = require("events");
 const { holdingmodel } = require("./models/holdingmodels");
 const { ordersmodel } = require("./models/ordermodel");
@@ -21,7 +23,7 @@ const { authRequired } = require("./middleware/auth");
 dns.setServers(["8.8.8.8", "8.8.4.4"]);
 
 const PORT = process.env.PORT || 3002;
-const uri = process.env.MONGO_URL;
+const uri = process.env.MONGO_URL || process.env.MONGO_URI;
 
 const app = express();
 const sseEmitter = new EventEmitter();
@@ -288,9 +290,8 @@ app.get("/api/funds", async (req, res) => {
 
 app.use(express.static(path.join(__dirname, "../frontent/build")));
 
-app.get("*", (req, res) => {
-  res.sendFile(path.join(__dirname, "../frontent/build/index.html"));
-});
+// app.get("*", ...) removed to avoid express 5 / path-to-regexp errors.
+
 
 
 
@@ -543,9 +544,6 @@ app.post("/api/orders", async (req, res) => {
 
 // Serve React frontend (SPA)
 // Combine dashboard/build and frontent/build by picking the first that exists.
-const path = require("path");
-const fs = require("fs");
-
 const buildDirCandidates = [
   path.join(__dirname, "..", "dashboard", "build"),
   path.join(__dirname, "..", "frontent", "build"),
@@ -579,6 +577,3 @@ connectToMongo().then(() => {
     console.log(`Server is running on port ${PORT}`);
   });
 });
-
-
-

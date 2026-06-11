@@ -1,13 +1,13 @@
 {
   "name": "zerodha",
   "version": "1.0.0",
-  "main": "Backend/index.js",
+  "main": "Backend/server.js",
   "engines": {
-    "node": "24.x"
+    "node": ">=18.0.0"
   },
   "scripts": {
-    "build": "cd frontent && npm run build",
-    "start": "node Backend/index.js"
+    "build": "npm install --prefix Backend && npm install --prefix frontent && npm run build --prefix frontent",
+    "start": "node Backend/server.js"
   },
   "license": "ISC",
   "type": "commonjs"
