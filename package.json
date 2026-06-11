@@ -1,14 +1,12 @@
 {
-  "engines": {
-    "node": "24.x"
-  },
   "name": "zerodha",
   "version": "1.0.0",
   "main": "Backend/index.js",
+  "engines": {
+    "node": "24.x"
+  },
   "scripts": {
-    "build": "cd frontent && npm install && npm run build && cd ../Backend && npm install",
-    "start": "node Backend/index.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "node Backend/index.js"
   },
   "license": "ISC",
   "type": "commonjs"
